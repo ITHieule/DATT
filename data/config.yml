@@ -1,0 +1,20 @@
+server:
+  port: '8081'
+  secret: '8-*e%yKHe3E%%u27$.eN3vdCsZq$Khc$Mp84ZDEQ+y$6f5Q%6rYDk4CS74KzFd2.'
+  #release | debug
+  mode: 'debug'
+
+cors:
+  global: 'true'
+  ips: 'http://127.0.0.1:8081,http://localhost:8081'
+
+database:
+  #mysql | postgres | sqlite | sqlserver
+  driver: 'sqlserver'
+  dbname: 'TYX_ReportWebDB'
+  username: 'tyxuan'
+  password: 'Erp@admin2309'
+  host: '192.168.23.122'
+  port: '1433'
+  sslmode: 'false'
+  logmode: 'true'
