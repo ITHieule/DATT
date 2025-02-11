@@ -2,7 +2,7 @@ package types
 
 //FILE - MODEL TYPES REPORTS
 
-//type - Report_MNG
+// type - Report_MNG
 type ReportMng struct {
 	Sno          uint   `json:"sno" form:"sno"`
 	Rpcode       string `json:"rpcode" form:"rpcode"`
@@ -14,7 +14,7 @@ type ReportMng struct {
 	Depname      string `json:"depname" form:"depname"`
 }
 
-//type - Report
+// type - Report
 type Report struct {
 	ID          uint64 `json:"id" form:"id"`
 	Note        string `json:"note" form:"note"`
@@ -31,7 +31,7 @@ type Report struct {
 // 	Password string `json:"password" form:"password"`
 // }
 
-//struct WorkUnit
+// struct WorkUnit
 type Department struct {
 	Dpid  uint   `json:"dpid" form:"dpid"`
 	Title string `json:"title" form:"title"`

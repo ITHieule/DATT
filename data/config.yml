@@ -10,11 +10,11 @@ cors:
 
 database:
   #mysql | postgres | sqlite | sqlserver
-  driver: 'sqlserver'
-  dbname: 'TYX_ReportWebDB'
-  username: 'tyxuan'
-  password: 'Erp@admin2309'
-  host: '192.168.23.122'
-  port: '1433'
+  driver: 'mysql'
+  dbname: 'fashion_shop'
+  username: 'test'
+  password: 'passtest'
+  host: '192.168.40.104'
+  port: '3306'
   sslmode: 'false'
   logmode: 'true'

@@ -132,14 +132,13 @@ func RPConnection() (*gorm.DB, error) {
 	return CreateDatabaseConnection(configuration)
 }
 
-
 func FashionBusiness() (*gorm.DB, error) {
 	configuration := config.GetConfig()
 	configuration.Database.Driver = "mysql"
 	configuration.Database.Host = "192.168.40.104"
 	configuration.Database.Username = "test"
 	configuration.Database.Password = "passtest"
-	configuration.Database.Dbname = "ESG"
+	configuration.Database.Dbname = "fashion_shop"
 	configuration.Database.Port = "3306"
 	return CreateDatabaseConnection(configuration)
 }
