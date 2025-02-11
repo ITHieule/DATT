@@ -131,3 +131,15 @@ func RPConnection() (*gorm.DB, error) {
 	configuration.Database.Dbname = "TYX_ReportWebDB"
 	return CreateDatabaseConnection(configuration)
 }
+
+
+func FashionBusiness() (*gorm.DB, error) {
+	configuration := config.GetConfig()
+	configuration.Database.Driver = "mysql"
+	configuration.Database.Host = "192.168.40.104"
+	configuration.Database.Username = "test"
+	configuration.Database.Password = "passtest"
+	configuration.Database.Dbname = "ESG"
+	configuration.Database.Port = "3306"
+	return CreateDatabaseConnection(configuration)
+}
