@@ -22,3 +22,11 @@ func (c *ProductController) Getproduct(ctx *gin.Context) {
 	}
 	response.OkWithData(ctx, result)
 }
+func (c *ProductController) Getproduct_image(ctx *gin.Context) {
+	result, err := services.ProductService.Product_imageSevice()
+	if err != nil {
+		response.FailWithDetailed(ctx, http.StatusInternalServerError, nil, err.Error())
+		return
+	}
+	response.OkWithData(ctx, result)
+}

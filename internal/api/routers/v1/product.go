@@ -8,4 +8,5 @@ import (
 
 func RegisterProductRouter(router *gin.RouterGroup) {
 	router.GET("/get", controllers.Product.Getproduct)
+	router.GET("/getimage", controllers.Product.Getproduct_image)
 }
