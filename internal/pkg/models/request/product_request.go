@@ -5,6 +5,8 @@ type CreateProductRequest struct {
 	Name        string  `json:"name" validate:"required"`
 	Description string  `json:"description"`
 	BasePrice   float64 `json:"base_price" validate:"required"`
+	Status      string  `json:"status"`
+	Created_at  string  `json:"created_at"`
 }
 
 type CreateProductVariantRequest struct {

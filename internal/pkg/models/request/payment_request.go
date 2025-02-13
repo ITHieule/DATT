@@ -1,9 +1,13 @@
 package request
 
 type CreatePaymentRequest struct {
-	OrderID       int     `json:"order_id" validate:"required"`
-	PaymentMethod string  `json:"payment_method" validate:"required"`
-	Amount        float64 `json:"amount" validate:"required"`
+	ID            int     `json:"id"`
+	OrderID       int     `json:"order_id"`
+	PaymentMethod string  `json:"payment_method"`
+	PaymentStatus string  `json:"payment_status"`
+	TransactionID *string `json:"transaction_id,omitempty"`
+	Amount        float64 `json:"amount"`
+	PaymentDate   string  `json:"payment_date"`
 }
 
 type RefundPaymentRequest struct {

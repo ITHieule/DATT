@@ -6,6 +6,8 @@ type CreateUserRequest struct {
 	Password  string `json:"password" validate:"required,min=6"`
 	Phone     string `json:"phone"`
 	AvatarURL string `json:"avatar_url"`
+	Created_at     string `json:"created_at"`
+	Role string `json:"role"`
 }
 
 type LoginRequests struct {

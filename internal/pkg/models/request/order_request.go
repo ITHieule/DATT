@@ -4,11 +4,9 @@ type CreateOrderRequest struct {
 	UserID          int     `json:"user_id" validate:"required"`
 	RecipientName   string  `json:"recipient_name" validate:"required"`
 	RecipientPhone  string  `json:"recipient_phone" validate:"required"`
-	ShippingAddress string  `json:"shipping_address" validate:"required"`
-	ShippingCity    string  `json:"shipping_city" validate:"required"`
-	ShippingPostal  string  `json:"shipping_postal_code" validate:"required"`
-	ShippingCountry string  `json:"shipping_country" validate:"required"`
+	ShippingAddressID int    `json:"shipping_address_id" validate:"required"`
 	TotalPrice      float64 `json:"total_price" validate:"required"`
+	Status          string  `json:"status,omitempty"`
 }
 
 type AddOrderDetailRequest struct {
