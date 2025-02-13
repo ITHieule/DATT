@@ -14,4 +14,6 @@ func Register(router *gin.Engine) {
 	RegisterAdminRouter(v1.Group("/rp/admin"))
 
 	RegisterFashionRouter(v1.Group("/fashion"))
-} 
+
+	RegisterUserRouter(v1.Group("/user"))
+}

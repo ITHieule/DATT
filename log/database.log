@@ -1,0 +1,109 @@
+
+2025/02/13 11:25:35 D:/DATT/internal/api/services/userservice.go:45 sql: expected 7 arguments, got 6
+[71.409ms] [rows:-] INSERT INTO users (name, email, password_hash,phone,avatar_url ,created_at,role) VALUES ('Nguyen Van A', 'nguyenvana@example.com', '$2a$10$iLuaczG39LKRmk1Vp4vEZeUAhkbvP93bA/Om9LP8D6Hopk48OT/LK', '0987654321', 'https://example.com/avatar.jpg', 'user',?)
+
+2025/02/13 11:27:24 D:/DATT/internal/api/services/userservice.go:46 Error 1265 (01000): Data truncated for column 'role' at row 1
+[5.431ms] [rows:-] INSERT INTO users (name, email, password_hash,phone,avatar_url ,role) VALUES ('Nguyen Van A', 'nguyenvana@example.com', '$2a$10$KGpTgkFSNRmetPQZPvYt9.QT7sU3DmTK0B9KzL5vITvnlq2fRvJ/6', '0987654321', 'https://example.com/avatar.jpg', 'user')
+
+2025/02/13 11:27:43 D:/DATT/internal/api/services/userservice.go:46 Error 1062 (23000): Duplicate entry '0987654321' for key 'phone'
+[5.005ms] [rows:-] INSERT INTO users (name, email, password_hash,phone,avatar_url ,role) VALUES ('Nguyen Van A', 'nguyenvana@example.com', '$2a$10$7fFYInxbSJ8sNvRibftfsulemnDDjXlqVC22nGMF1U1GrrPn5/R7W', '0987654321', 'https://example.com/avatar.jpg', 'customer')
+
+2025/02/13 11:28:07 D:/DATT/internal/api/services/userservice.go:46 Error 1062 (23000): Duplicate entry '0987654321' for key 'phone'
+[0.000ms] [rows:-] INSERT INTO users (name, email, password_hash,phone,avatar_url ,role) VALUES ('Nguyen Van A', 'nguyenvana@example.com', '$2a$10$TOCB3L5LuT2kS//Cd1Uyrug3HIUjX3STHDb0jz3Iv.cyck6mnqiJC', '0987654321', 'https://example.com/avatar.jpg', 'customer')
+
+2025/02/13 11:28:20 D:/DATT/internal/api/services/userservice.go:46
+[6.928ms] [rows:0] INSERT INTO users (name, email, password_hash,phone,avatar_url ,role) VALUES ('Nguyen Van A', 'nguyenvana@example.com', '$2a$10$sy8ZstJDNVInYO22KPfH7.4xBdToXrqzLHUKs2.rQSyAxqNvhI/h.', '0912654321', 'https://example.com/avatar.jpg', 'customer')
+
+2025/02/13 12:29:31 D:/DATT/internal/api/services/userservice.go:116
+[3.447ms] [rows:1] SELECT * FROM users WHERE email = 'nguyenvana@example.com'
+
+2025/02/13 12:32:17 D:/DATT/internal/api/services/userservice.go:114
+[2.454ms] [rows:1] SELECT * FROM `users` WHERE email = 'nguyenvana@example.com' ORDER BY `users`.`id` LIMIT 1
+
+2025/02/13 12:38:10 D:/DATT/internal/api/services/userservice.go:44
+[61.336ms] [rows:0] INSERT INTO users (name, email, password_hash,phone) VALUES ( 'Nguyen Van B', 'nguyenvanB@example.com', '$2a$10$RoG.VRFa07cRrLzCiWJnretMgBSbSgdc.ADkVxE2n9GlB66WTNWtK', '0932654321')
+
+2025/02/13 12:39:19 D:/DATT/internal/api/services/userservice.go:114
+[54.383ms] [rows:1] SELECT * FROM `users` WHERE email = 'nguyenvanB@example.com' ORDER BY `users`.`id` LIMIT 1
+
+2025/02/13 12:43:02 D:/DATT/internal/api/services/userservice.go:116
+[4.109ms] [rows:1] SELECT * FROM users WHERE email = 'nguyenvanB@example.com'
+
+2025/02/13 12:45:46 D:/DATT/internal/api/services/userservice.go:114
+[1.690ms] [rows:1] SELECT * FROM `users` WHERE email = 'nguyenvanB@example.com' ORDER BY `users`.`id` LIMIT 1
+
+2025/02/13 12:47:09 D:/DATT/internal/api/services/userservice.go:114
+[1.746ms] [rows:1] SELECT * FROM `users` WHERE email = 'nguyenvana@gmail.com' ORDER BY `users`.`id` LIMIT 1
+
+2025/02/13 12:51:16 D:/DATT/internal/api/services/userservice.go:114
+[5.810ms] [rows:1] SELECT * FROM `users` WHERE email = 'nguyenvanB@example.com' ORDER BY `users`.`id` LIMIT 1
+
+2025/02/13 13:05:39 D:/DATT/internal/api/services/userservice.go:114
+[8.285ms] [rows:1] SELECT * FROM `users` WHERE email = 'nguyenvanB@example.com' ORDER BY `users`.`id` LIMIT 1
+
+2025/02/13 13:08:14 D:/DATT/internal/api/services/userservice.go:114
+[3.567ms] [rows:1] SELECT * FROM `users` WHERE email = 'nguyenvanB@example.com' ORDER BY `users`.`id` LIMIT 1
+
+2025/02/13 13:10:24 D:/DATT/internal/api/services/userservice.go:114
+[5.398ms] [rows:1] SELECT * FROM `users` WHERE email = 'nguyenvanB@example.com' ORDER BY `users`.`id` LIMIT 1
+
+2025/02/13 13:10:54 D:/DATT/internal/api/services/userservice.go:114
+[3.996ms] [rows:1] SELECT * FROM `users` WHERE email = 'nguyenvanB@example.com' ORDER BY `users`.`id` LIMIT 1
+
+2025/02/13 13:10:55 D:/DATT/internal/api/services/userservice.go:114
+[22.790ms] [rows:1] SELECT * FROM `users` WHERE email = 'nguyenvanB@example.com' ORDER BY `users`.`id` LIMIT 1
+
+2025/02/13 13:11:11 D:/DATT/internal/api/services/userservice.go:114
+[7.080ms] [rows:1] SELECT * FROM `users` WHERE email = 'nguyenvanB@example.com' ORDER BY `users`.`id` LIMIT 1
+
+2025/02/13 13:11:47 D:/DATT/internal/api/services/userservice.go:114
+[0.993ms] [rows:1] SELECT * FROM `users` WHERE email = 'nguyenvanB@example.com' ORDER BY `users`.`id` LIMIT 1
+
+2025/02/13 13:13:09 D:/DATT/internal/api/services/userservice.go:114
+[3.721ms] [rows:1] SELECT * FROM `users` WHERE email = 'nguyenvanB@example.com' ORDER BY `users`.`id` LIMIT 1
+
+2025/02/13 13:16:00 D:/DATT/internal/api/services/userservice.go:114
+[4.001ms] [rows:1] SELECT * FROM `users` WHERE email = 'nguyenvanB@example.com' ORDER BY `users`.`id` LIMIT 1
+
+2025/02/13 13:17:12 D:/DATT/internal/api/services/userservice.go:113
+[1.956ms] [rows:1] SELECT * FROM `users` WHERE email = 'nguyenvanB@example.com' ORDER BY `users`.`id` LIMIT 1
+
+2025/02/13 13:17:44 D:/DATT/internal/api/services/userservice.go:113
+[1.932ms] [rows:1] SELECT * FROM `users` WHERE email = 'nguyenvanB@example.com' ORDER BY `users`.`id` LIMIT 1
+
+2025/02/13 13:18:46 D:/DATT/internal/api/services/userservice.go:114
+[2.453ms] [rows:1] SELECT * FROM `users` WHERE email = 'nguyenvanB@example.com' ORDER BY `users`.`id` LIMIT 1
+
+2025/02/13 13:21:38 D:/DATT/internal/api/services/userservice.go:114
+[2.725ms] [rows:1] SELECT * FROM `users` WHERE email = 'nguyenvanB@example.com' ORDER BY `users`.`id` LIMIT 1
+
+2025/02/13 13:26:55 D:/DATT/internal/api/services/userservice.go:116
+[2.547ms] [rows:1] SELECT * FROM users WHERE email = 'nguyenvanB@example.com'
+
+2025/02/13 13:28:33 D:/DATT/internal/api/services/userservice.go:116
+[5.514ms] [rows:1] SELECT * FROM users WHERE email = 'nguyenvanB@example.com'
+
+2025/02/13 13:31:40 D:/DATT/internal/api/services/userservice.go:117
+[4.923ms] [rows:1] SELECT * FROM users WHERE email = 'nguyenvanB@example.com'
+
+2025/02/13 13:34:57 D:/DATT/internal/api/services/userservice.go:85 sql: expected 6 arguments, got 7
+[236.539ms] [rows:0] 
+        UPDATE users
+        SET password_hash = COALESCE('$2a$10$2S.7xViUUkzSoL4NHNvbPutcRFKms/o1YcVkSRAOgmLgetCyUP.ne', password_hash),
+		name = 'Nguyen Van C',
+            email = 'nguyenvanB@example.com',
+            phone = '123456',
+			avatar_url = ''
+        WHERE id = ''
+    
+
+2025/02/13 13:36:24 D:/DATT/internal/api/services/userservice.go:85
+[131.986ms] [rows:1] 
+        UPDATE users
+        SET password_hash = COALESCE('$2a$10$oVaCmDWZRergQRv5eGreyunPLsPM/PZ5MPqour5FC28rxLYQQp5wW', password_hash),
+		name = 'Nguyen Van C',
+            email = 'nguyenvanB@example.com',
+            phone = '',
+			avatar_url = ''
+        WHERE id = 15
+    

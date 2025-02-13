@@ -1,0 +1,26 @@
+[GIN-debug] GET    /api/v1/ping              --> web-api/internal/api/controllers.(*CommonController).Ping-fm (4 handlers)
+[GIN-debug] GET    /api/v1/rp/reports        --> web-api/internal/api/controllers.(*ReportController).GetReport-fm (4 handlers)
+[GIN-debug] POST   /api/v1/rp/rpbycode       --> web-api/internal/api/controllers.(*ReportController).GetReportByRpcode-fm (4 handlers)
+[GIN-debug] POST   /api/v1/rp/insertreport1  --> web-api/internal/api/controllers.(*ReportController).InsertFirstReport-fm (4 handlers)
+[GIN-debug] POST   /api/v1/rp/checkfeedback  --> web-api/internal/api/controllers.(*ReportController).CheckRPCodeAndGetReports-fm (4 handlers)
+[GIN-debug] POST   /api/v1/rp/sendfeedback   --> web-api/internal/api/controllers.(*ReportController).SendReport-fm (4 handlers)
+[GIN-debug] PATCH  /api/v1/rp/updatenote     --> web-api/internal/api/controllers.(*ReportController).UpdateNote-fm (4 handlers)
+[GIN-debug] PATCH  /api/v1/rp/iscompleted    --> web-api/internal/api/controllers.(*ReportController).UpdateIsCompleted-fm (4 handlers)
+[GIN-debug] GET    /api/v1/rp/departments    --> web-api/internal/api/controllers.(*ReportController).GetDepartments-fm (4 handlers)
+[GIN-debug] POST   /api/v1/rp/sendemail      --> web-api/internal/api/controllers.(*ReportController).SendEmail-fm (4 handlers)
+[GIN-debug] POST   /api/v1/rp/admin/login    --> web-api/internal/api/controllers.(*AdminController).Login-fm (4 handlers)
+[GIN-debug] POST   /api/v1/rp/admin/isanswered --> web-api/internal/api/controllers.(*AdminController).GetReportByIsAnsweredAndRpid-fm (4 handlers)
+[GIN-debug] POST   /api/v1/rp/admin/sendanswer --> web-api/internal/api/controllers.(*AdminController).SendAnswer-fm (4 handlers)
+[GIN-debug] PATCH  /api/v1/rp/admin/updateanswer --> web-api/internal/api/controllers.(*AdminController).UpdateAnswer-fm (4 handlers)
+[GIN-debug] PATCH  /api/v1/rp/admin/updaterptype --> web-api/internal/api/controllers.(*AdminController).UpdateRPTypes-fm (4 handlers)
+[GIN-debug] GET    /api/v1/rp/admin/rptypes  --> web-api/internal/api/controllers.(*AdminController).GetRPTypes-fm (4 handlers)
+[GIN-debug] GET    /api/v1/rp/admin/excelbydepartments --> web-api/internal/api/controllers.(*AdminController).ExcelByDepartments-fm (4 handlers)
+[GIN-debug] GET    /api/v1/rp/admin/excelbyreporttypes --> web-api/internal/api/controllers.(*AdminController).ExcelByReportTypes-fm (4 handlers)
+[GIN-debug] GET    /api/v1/fashion/get       --> web-api/internal/api/controllers.(*FashionController).Get-fm (4 handlers)
+[GIN-debug] POST   /api/v1/user/register     --> web-api/internal/api/controllers.(*UserController).Register-fm (4 handlers)
+[GIN-debug] PUT    /api/v1/user/update       --> web-api/internal/api/controllers.(*UserController).UpdateUsers-fm (4 handlers)
+[GIN-debug] POST   /api/v1/user/login        --> web-api/internal/api/controllers.(*UserController).Login-fm (4 handlers)
+[GIN-debug] [WARNING] You trusted all proxies, this is NOT safe. We recommend you to set a value.
+Please check https://pkg.go.dev/github.com/gin-gonic/gin#readme-don-t-trust-all-proxies for details.
+[GIN-debug] Listening and serving HTTP on :8081
+::1 - - [13/Feb/2025:13:36:24 +0700] "PUT /api/v1/user/update HTTP/1.1 200 177.6889ms " " PostmanRuntime/7.43.0" " "
