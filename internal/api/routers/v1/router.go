@@ -18,4 +18,6 @@ func Register(router *gin.Engine) {
 	RegisterUserRouter(v1.Group("/user"))
 
 	RegisterCartRouter(v1.Group("/cart"))
+
+	RegisterProductRouter(v1.Group("/product"))
 }
