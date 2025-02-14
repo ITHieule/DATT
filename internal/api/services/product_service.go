@@ -87,6 +87,7 @@ func (s *ProductsService) Product_imageSevice() ([]types.Product_image, error) {
 
 	return pro, nil
 }
+
 // GetProductByID lấy chi tiết sản phẩm theo ID
 func (s *ProductsService) GetProductByID(productID int) (*types.ProductDetailResponse, error) {
 	// Kết nối database
@@ -147,9 +148,8 @@ func (s *ProductsService) GetProductByID(productID int) (*types.ProductDetailRes
 		Variants:  variants,
 		Images:    imageURLs,
 	}, nil
-} 
+}
 
-// AddProductService thêm sản phẩm mới cùng với các biến thể
 // AddProductService thêm sản phẩm mới, bao gồm biến thể và ảnh sản phẩm
 func (s *ProductsService) AddProductService(requestParams *request.CreateProductRequest) (types.Product, error) {
 	// Kết nối database
@@ -217,37 +217,90 @@ func (s *ProductsService) AddProductService(requestParams *request.CreateProduct
 	return product, nil
 }
 
+func (s *ProductsService) UpdateProductService(requestParams *request.CreateProductRequest) (types.Product, error) {
+	// Kết nối database
+	db, err := database.FashionBusiness()
+	if err != nil {
+		fmt.Println("Database connection error:", err)
+		return types.Product{}, err
+	}
+	dbInstance, _ := db.DB()
+	defer dbInstance.Close()
 
-// func (s *ProductsService) UpdateproductSevice(requestParams *request.CreateProductRequest) ([]types.Product, error) {
-// 	var Sizes []types.Product
+	// Bắt đầu transaction để đảm bảo tính toàn vẹn dữ liệu
+	tx := db.Begin()
 
-// 	// Kết nối database
-// 	db, err := database.FashionBusiness()
-// 	if err != nil {
-// 		fmt.Println("Database connection error:", err)
+	// Kiểm tra xem sản phẩm có tồn tại không
+	var product types.Product
+	if err := tx.First(&product, requestParams.Id).Error; err != nil {
+		tx.Rollback()
+		fmt.Println("Product not found:", err)
+		return types.Product{}, err
+	}
 
-// 		return nil, err
-// 	}
-// 	dbInstance, _ := db.DB()
-// 	defer dbInstance.Close()
+	// Cập nhật thông tin sản phẩm
+	product.Name = requestParams.Name
+	product.Description = requestParams.Description
+	product.BasePrice = requestParams.BasePrice
+	product.CategoryID = requestParams.CategoryID
 
-// 	// Truy vấn SQL lấy ngày đặt hàng và tổng số lượng sách đã bán
-// 	query := `
-//     UPDATE products
-//     SET id = ?, size_id = ?
-//     WHERE id = ?
-// `
-// 	err = db.Exec(query,
-// 		requestParams.Base_id,
-// 		requestParams.Size_id,
-// 		requestParams.Id,
-// 	).Error
-// 	if err != nil {
-// 		fmt.Println("Query execution error:", err)
-// 		return nil, err
-// 	}
-// 	return Sizes, nil
-// }
+	if err := tx.Save(&product).Error; err != nil {
+		tx.Rollback()
+		fmt.Println("Error updating product:", err)
+		return types.Product{}, err
+	}
+
+	// Xóa các biến thể cũ và thêm mới
+	if err := tx.Where("product_id = ?", product.ID).Delete(&types.ProductVariant{}).Error; err != nil {
+		tx.Rollback()
+		fmt.Println("Error deleting old product variants:", err)
+		return types.Product{}, err
+	}
+
+	var variants []types.ProductVariant
+	for _, variant := range requestParams.Variants {
+		variant.ProductID = product.ID
+		variants = append(variants, variant)
+	}
+
+	if len(variants) > 0 {
+		if err := tx.Create(&variants).Error; err != nil {
+			tx.Rollback()
+			fmt.Println("Error inserting new product variants:", err)
+			return types.Product{}, err
+		}
+	}
+
+	// Xóa các ảnh cũ và thêm mới
+	if err := tx.Where("product_id = ?", product.ID).Delete(&types.ProductImage{}).Error; err != nil {
+		tx.Rollback()
+		fmt.Println("Error deleting old product images:", err)
+		return types.Product{}, err
+	}
+
+	var images []types.ProductImage
+	for _, imageURL := range requestParams.Images {
+		image := types.ProductImage{
+			ProductID: product.ID,
+			ImageURL:  imageURL,
+		}
+		images = append(images, image)
+	}
+
+	if len(images) > 0 {
+		if err := tx.Create(&images).Error; err != nil {
+			tx.Rollback()
+			fmt.Println("Error inserting new product images:", err)
+			return types.Product{}, err
+		}
+	}
+
+	// Commit transaction nếu không có lỗi
+	tx.Commit()
+
+	return product, nil
+}
+
 
 func (s *ProductsService) DeleteproductSevice(Id int) error {
 
@@ -280,28 +333,30 @@ func (s *ProductsService) DeleteproductSevice(Id int) error {
 	return nil
 }
 
-func (s *ProductsService) SearchproductSevice(requestParams *request.CreateProductRequest) ([]types.Product, error) {
-	var Sizes []types.Product
+func (s *ProductsService) SearchProductService(requestParams *request.CreateProductRequest) ([]types.Product, error) {
+	var products []types.Product
 
 	// Kết nối database
 	db, err := database.FashionBusiness()
 	if err != nil {
 		fmt.Println("Database connection error:", err)
-
 		return nil, err
 	}
 	dbInstance, _ := db.DB()
 	defer dbInstance.Close()
 
-	// Truy vấn SQL lấy ngày đặt hàng và tổng số lượng sách đã bán
+	// Truy vấn SQL tìm kiếm sản phẩm
+	query := `
+		SELECT * FROM products 
+		WHERE id = ? OR name LIKE ?
+	`
+	searchName := "%" + requestParams.Name + "%" // Tìm kiếm gần đúng
 
-	err = db.Raw("SELECT * FROM products WHERE id = ? OR name = ?",
-		requestParams.Name,
-		requestParams.Id,
-	).Scan(&Sizes).Error
+	err = db.Raw(query, requestParams.Id, searchName).Scan(&products).Error
 	if err != nil {
 		fmt.Println("Query execution error:", err)
 		return nil, err
 	}
-	return Sizes, nil
+	return products, nil
 }
+
