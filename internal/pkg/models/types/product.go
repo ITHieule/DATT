@@ -25,7 +25,7 @@ type ProductDetailResponse struct {
 	ID        int              `json:"id"`
 	Name      string           `json:"name"`
 	BasePrice float64          `json:"base_price"`
-	Variants  []ProductVariant `json:"variants"`
+	Variants  []ProductVariant `json:"variants"`	
 	Images []string `json:"images"`
 }
 
@@ -37,4 +37,12 @@ type ProductVariant struct {
 	Color     string  `json:"color"`
 	Stock     int     `json:"stock"`
 	Price     float64 `json:"price"`
+}
+
+
+// ProductImage đại diện cho một ảnh sản phẩm
+type ProductImage struct {
+	ID        int    `json:"id"`
+	ProductID int    `json:"product_id"`
+	ImageURL  string `json:"image_url"`
 }
