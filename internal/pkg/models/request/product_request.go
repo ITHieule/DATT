@@ -1,6 +1,7 @@
 package request
 
 type CreateProductRequest struct {
+	Id          int     `json:"id" validate:"required"`
 	CategoryID  int     `json:"category_id" validate:"required"`
 	Name        string  `json:"name" validate:"required"`
 	Description string  `json:"description"`
@@ -10,6 +11,7 @@ type CreateProductRequest struct {
 }
 
 type CreateProductVariantRequest struct {
+	Id        int     `json:"id" validate:"required"`
 	ProductID int     `json:"product_id" validate:"required"`
 	Size      string  `json:"size" validate:"required"`
 	Color     string  `json:"color" validate:"required"`

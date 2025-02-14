@@ -6,6 +6,8 @@ import (
 
 	"web-api/internal/pkg/database"
 	"web-api/internal/pkg/models/types"
+
+	"gorm.io/gorm"
 )
 
 type ProductsService struct {
@@ -83,4 +85,65 @@ func (s *ProductsService) Product_imageSevice() ([]types.Product_image, error) {
 	}
 
 	return pro, nil
+}
+// GetProductByID lấy chi tiết sản phẩm theo ID
+func (s *ProductsService) GetProductByID(productID int) (*types.ProductDetailResponse, error) {
+	// Kết nối database
+	db, err := database.FashionBusiness()
+	if err != nil {
+		fmt.Println("Database connection error:", err)
+		return nil, err
+	}
+	dbInstance, _ := db.DB()
+	defer dbInstance.Close()
+
+	// Biến chứa thông tin sản phẩm
+	var product struct {
+		ID        int     `json:"id"`
+		Name      string  `json:"name"`
+		BasePrice float64 `json:"base_price"`
+		ImageURLs string  `json:"image_urls"`
+	}
+
+	// Truy vấn sản phẩm và hình ảnh
+	query := `
+		SELECT p.id, p.name, p.base_price, 
+		       COALESCE(GROUP_CONCAT(pi.image_url ORDER BY pi.id), '') AS image_urls
+		FROM products p
+		LEFT JOIN product_images pi ON p.id = pi.product_id
+		WHERE p.id = ?	
+		GROUP BY p.id;
+	`
+
+	err = db.Raw(query, productID).Scan(&product).Error
+	if err != nil {
+		if err == gorm.ErrRecordNotFound {
+			return nil, fmt.Errorf("product not found")
+		}
+		return nil, fmt.Errorf("query error: %w", err)
+	}
+
+	// Lấy danh sách biến thể sản phẩm
+	var variants []types.ProductVariant
+	err = db.Table("product_variants").
+		Where("product_id = ?", productID).
+		Find(&variants).Error
+	if err != nil {
+		return nil, fmt.Errorf("failed to get product variants: %w", err)
+	}
+
+	// Chuyển đổi danh sách ảnh thành slice
+	imageURLs := []string{}
+	if product.ImageURLs != "" {
+		imageURLs = strings.Split(product.ImageURLs, ",")
+	}
+
+	// Trả về kết quả
+	return &types.ProductDetailResponse{
+		ID:        product.ID,
+		Name:      product.Name,
+		BasePrice: product.BasePrice,
+		Variants:  variants,
+		Images:    imageURLs,
+	}, nil
 }
