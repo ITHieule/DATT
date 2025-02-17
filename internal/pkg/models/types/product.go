@@ -12,7 +12,6 @@ type Product struct {
 	BasePrice   float64   `json:"base_price"`
 	CreatedAt   time.Time `json:"created_at"`
 }
-
 type Product_image struct {
 	ID           int      `json:"id"`
 	Name         string   `json:"name"`
@@ -26,14 +25,14 @@ type ProductDetailResponse struct {
 	Name        string           `json:"name"`
 	BasePrice   float64          `json:"base_price"`
 	Description string           `json:"description"`
-	Variants    []ProductVariant `json:"variants"`
+	Variants    []ProductVariant `json:"variants" gorm:"foreignKey:ProductID;references:ID"` // Specify foreign key relation
 	Images      []string         `json:"images"`
 }
 
 // ProductVariant đại diện cho một biến thể của sản phẩm
 type ProductVariant struct {
 	ID        int     `json:"id"`
-	ProductID int     `json:"product_id"`
+	ProductID int     `json:"product_id"` // This should match the foreign key in the Product table
 	Size      string  `json:"size"`
 	Color     string  `json:"color"`
 	Stock     int     `json:"stock"`

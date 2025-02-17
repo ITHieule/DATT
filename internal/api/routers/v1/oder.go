@@ -8,5 +8,6 @@ import (
 
 func RegisterOderRouter(router *gin.RouterGroup) {
 	router.GET("/get", controllers.Oder.Getoder)
+	router.GET("/getorderid", controllers.Oder.GetProductDetailsByOrderID)
 	
 }

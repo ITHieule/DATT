@@ -21,5 +21,5 @@ func Register(router *gin.Engine) {
 
 	RegisterProductRouter(v1.Group("/product"))
 
-	RegisterOderRouter(v1.Group("/oder"))
+	RegisterOderRouter(v1.Group("/order"))
 }
