@@ -2,11 +2,11 @@ package controllers
 
 import (
 	"net/http"
-	
+
+	"fmt"
+	"github.com/gin-gonic/gin"
 	"web-api/internal/api/services"
 	"web-api/internal/pkg/models/response"
-
-	"github.com/gin-gonic/gin"
 )
 
 type CartController struct {
@@ -16,25 +16,24 @@ type CartController struct {
 var Cart = &CartController{}
 
 func (c *CartController) GetToCart(ctx *gin.Context) {
-	// Struct để nhận dữ liệu từ body
-	var request struct {
-		UserID int `json:"user_id"`
-	}
+	// Lấy user_id từ query parameter
+	userID := ctx.DefaultQuery("user_id", "")
 
-	// Bind JSON từ body vào struct
-	if err := ctx.ShouldBindJSON(&request); err != nil {
-		response.FailWithDetailed(ctx, http.StatusBadRequest, nil, "Invalid request body")
-		return
-	}
-
-	// Kiểm tra userID có hợp lệ không
-	if request.UserID == 0 {
+	// Kiểm tra user_id có hợp lệ không
+	if userID == "" {
 		response.FailWithDetailed(ctx, http.StatusBadRequest, nil, "User ID is required")
 		return
 	}
 
+	// Chuyển đổi user_id từ string sang int
+	var userIDInt int
+	if _, err := fmt.Sscanf(userID, "%d", &userIDInt); err != nil {
+		response.FailWithDetailed(ctx, http.StatusBadRequest, nil, "Invalid User ID")
+		return
+	}
+
 	// Gọi service để lấy giỏ hàng theo userID
-	result, err := services.Cart.GetCartByUserID(request.UserID)
+	result, err := services.Cart.GetCartByUserID(userIDInt)
 	if err != nil {
 		response.FailWithDetailed(ctx, http.StatusInternalServerError, nil, err.Error())
 		return
@@ -43,8 +42,6 @@ func (c *CartController) GetToCart(ctx *gin.Context) {
 	// Trả về kết quả thành công
 	response.OkWithData(ctx, result)
 }
-
-
 
 func (c *CartController) AddToCart(ctx *gin.Context) {
 	var req struct {
