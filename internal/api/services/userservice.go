@@ -116,26 +116,26 @@ func (s *UserService) Login(requestParams *request.LoginRequests) (string, error
 	err = db.Raw(query, requestParams.Email).Scan(&user).Error
 
 	if err != nil {
-		fmt.Println("Query execution error:", err)
-		return "", err
+		fmt.Println("User not found:", requestParams.Email)
+		return "", errors.New("email hoặc mật khẩu không đúng") // Lỗi rõ ràng hơn
 	}
 
 	// So sánh mật khẩu đã mã hóa với mật khẩu người dùng nhập vào
 	err = bcrypt.CompareHashAndPassword([]byte(user.Password_hash), []byte(requestParams.Password_hash))
 	if err != nil {
 		fmt.Println("Password mismatch for user:", requestParams.Email)
-		return "", errors.New("invalid credentials") // Trả về lỗi nếu mật khẩu không khớp
+		return "", errors.New("email hoặc mật khẩu không đúng")
 	}
+
 	// Tạo JWT token
 	token, err := until.GenerateJWT(user.ID, user.Role, user.Name)
 	if err != nil {
 		fmt.Println("Error generating token:", err)
-		return token, nil
+		return "", err
 	}
 
-	// Trả về thông tin người dùng và token
+	// Trả về token nếu đăng nhập thành công
 	return token, nil
-
 }
 
 // Hàm mã hóa mật khẩu
