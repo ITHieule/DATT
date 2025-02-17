@@ -2,8 +2,8 @@ package controllers
 
 import (
 	"net/http"
+	"strconv"
 	"web-api/internal/api/services"
-	"web-api/internal/pkg/models/request"
 	"web-api/internal/pkg/models/response"
 
 	"github.com/gin-gonic/gin"
@@ -32,17 +32,21 @@ func (c *ProductController) Getproduct_image(ctx *gin.Context) {
 	response.OkWithData(ctx, result)
 }
 
-// GetProductDetailController lấy thông tin chi tiết sản phẩm theo ID
+// GetProductDetailController lấy thông tin chi tiết sản phẩm theo ID từ URL
 func (c *ProductController) GetProductDetailController(ctx *gin.Context) {
-	// Parse dữ liệu từ body
-	var req request.CreateProductRequest
-	if err := ctx.ShouldBindJSON(&req); err != nil {
-		response.FailWithDetailed(ctx, http.StatusBadRequest, nil, "Invalid request body")
+	// Lấy id từ URL params
+	productId := ctx.Param("id") // Tham số 'id' trong URL
+
+	// Chuyển id từ chuỗi sang kiểu số nếu cần (ví dụ: nếu id là số nguyên)
+	// Nếu id không hợp lệ, trả về lỗi
+	id, err := strconv.Atoi(productId)
+	if err != nil {
+		response.FailWithDetailed(ctx, http.StatusBadRequest, nil, "Invalid product ID")
 		return
 	}
 
 	// Gọi service để lấy thông tin chi tiết sản phẩm
-	product, err := services.ProductService.GetProductByID(req.Id)
+	product, err := services.ProductService.GetProductByID(id)
 	if err != nil {
 		response.FailWithDetailed(ctx, http.StatusNotFound, nil, err.Error())
 		return
