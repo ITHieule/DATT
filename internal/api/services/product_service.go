@@ -101,15 +101,16 @@ func (s *ProductsService) GetProductByID(productID int) (*types.ProductDetailRes
 
 	// Biến chứa thông tin sản phẩm
 	var product struct {
-		ID        int     `json:"id"`
-		Name      string  `json:"name"`
-		BasePrice float64 `json:"base_price"`
-		ImageURLs string  `json:"image_urls"`
+		ID          int     `json:"id"`
+		Name        string  `json:"name"`
+		BasePrice   float64 `json:"base_price"`
+		Description string  `json:"description"`
+		ImageURLs   string  `json:"image_urls"`
 	}
 
 	// Truy vấn sản phẩm và hình ảnh
 	query := `
-		SELECT p.id, p.name, p.base_price, 
+		SELECT p.id, p.name, p.base_price, p.description, 
 		       COALESCE(GROUP_CONCAT(pi.image_url ORDER BY pi.id), '') AS image_urls
 		FROM products p
 		LEFT JOIN product_images pi ON p.id = pi.product_id
@@ -142,11 +143,12 @@ func (s *ProductsService) GetProductByID(productID int) (*types.ProductDetailRes
 
 	// Trả về kết quả
 	return &types.ProductDetailResponse{
-		ID:        product.ID,
-		Name:      product.Name,
-		BasePrice: product.BasePrice,
-		Variants:  variants,
-		Images:    imageURLs,
+		ID:          product.ID,
+		Name:        product.Name,
+		BasePrice:   product.BasePrice,
+		Description: product.Description,
+		Variants:    variants,
+		Images:      imageURLs,
 	}, nil
 }
 
@@ -301,7 +303,6 @@ func (s *ProductsService) UpdateProductService(requestParams *request.CreateProd
 	return product, nil
 }
 
-
 func (s *ProductsService) DeleteproductSevice(Id int) error {
 
 	// Kết nối database
@@ -359,4 +360,3 @@ func (s *ProductsService) SearchProductService(requestParams *request.CreateProd
 	}
 	return products, nil
 }
-
