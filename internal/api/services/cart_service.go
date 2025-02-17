@@ -3,9 +3,11 @@ package services
 import (
 	"errors"
 	"fmt"
+	"strings"
 	"web-api/internal/pkg/database"
 	"web-api/internal/pkg/models/request"
 	"web-api/internal/pkg/models/types"
+
 )
 
 type CartService struct {
@@ -15,7 +17,7 @@ type CartService struct {
 var Cart = &CartService{}
 
 func (s *CartService) GetCartByUserID(userID int) ([]types.Carttypes, error) {
-	var carts []types.Carttypes
+	var cartMap = make(map[uint]*types.Carttypes) // Dùng map để gom nhóm dữ liệu
 
 	// Kết nối database
 	db, err := database.FashionBusiness()
@@ -28,14 +30,20 @@ func (s *CartService) GetCartByUserID(userID int) ([]types.Carttypes, error) {
 
 	// Truy vấn SQL lấy giỏ hàng theo user_id
 	query := `
-		SELECT c.id, c.user_id, c.product_variant_id, c.quantity, 
-		       pv.id AS product_variant_id, pv.product_id, pv.size, pv.color, pv.price
+		SELECT 
+		    c.id, c.user_id, c.quantity,
+		    p.id AS product_id, p.name, p.base_price, p.description,
+		    pv.id AS product_variant_id, pv.size, pv.color, pv.price,
+		    GROUP_CONCAT(pi.image_url) AS images
 		FROM cart c
 		LEFT JOIN product_variants pv ON c.product_variant_id = pv.id
+		LEFT JOIN products p ON pv.product_id = p.id
+		LEFT JOIN product_images pi ON p.id = pi.product_id
 		WHERE c.user_id = ?
+		GROUP BY c.id, c.user_id, p.id, p.name, p.base_price, p.description, pv.id, pv.size, pv.color, pv.price
 	`
 
-	// Thực hiện truy vấn và ánh xạ kết quả vào struct
+	// Thực hiện truy vấn
 	rows, err := db.Raw(query, userID).Rows()
 	if err != nil {
 		fmt.Println("Query execution error:", err)
@@ -43,25 +51,53 @@ func (s *CartService) GetCartByUserID(userID int) ([]types.Carttypes, error) {
 	}
 	defer rows.Close()
 
-	// Duyệt qua từng dòng dữ liệu và ánh xạ vào Carttypes
+	// Xử lý dữ liệu từ database
 	for rows.Next() {
-		var cartItem types.Carttypes
-		var productVariant types.ProductVariant
+		var cartID uint
+		var userID int
+		var quantity int
+		var product types.ProductDetailResponse
+		var variant types.ProductVariant
+		var images string
 
-		err := rows.Scan(&cartItem.Id, &cartItem.User_Id, &productVariant.ID, &cartItem.Quantity, &productVariant.ID, &productVariant.ProductID, &productVariant.Size, &productVariant.Color, &productVariant.Price)
+		err := rows.Scan(
+			&cartID, &userID, &quantity,
+			&product.ID, &product.Name, &product.BasePrice, &product.Description,
+			&variant.ID, &variant.Size, &variant.Color, &variant.Price,
+			&images,
+		)
 		if err != nil {
 			fmt.Println("Row scan error:", err)
 			return nil, err
 		}
 
-		// Thêm thông tin sản phẩm vào Carttypes
-		cartItem.ProductVariants = append(cartItem.ProductVariants, productVariant)
-		carts = append(carts, cartItem)
+		// Chuyển chuỗi ảnh thành mảng
+		product.Images = strings.Split(images, ",")
+		product.Variants = append(product.Variants, variant)
+
+		// Nếu cartID chưa có trong map, khởi tạo mới
+		if _, exists := cartMap[cartID]; !exists {
+			cartMap[cartID] = &types.Carttypes{
+				Id:                   cartID,
+				User_Id:              userID,
+				Quantity:             quantity,
+				ProductDetailResponse: []types.ProductDetailResponse{},
+			}
+		}
+
+		// Thêm sản phẩm vào giỏ hàng tương ứng
+		cartMap[cartID].ProductDetailResponse = append(cartMap[cartID].ProductDetailResponse, product)
 	}
 
-	// Trả về kết quả giỏ hàng
+	// Chuyển map thành slice để trả về kết quả
+	var carts []types.Carttypes
+	for _, cart := range cartMap {
+		carts = append(carts, *cart)
+	}
+
 	return carts, nil
 }
+
 
 func (s *CartService) AddToCart(userID, productVariantID, quantity int) error {
 	if quantity < 1 {
