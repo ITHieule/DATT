@@ -15,7 +15,7 @@ type CartService struct {
 var Cart = &CartService{}
 
 func (s *CartService) GetCartByUserID(userID int) ([]types.Carttypes, error) {
-	var cart []types.Carttypes
+	var carts []types.Carttypes
 
 	// Kết nối database
 	db, err := database.FashionBusiness()
@@ -28,18 +28,40 @@ func (s *CartService) GetCartByUserID(userID int) ([]types.Carttypes, error) {
 
 	// Truy vấn SQL lấy giỏ hàng theo user_id
 	query := `
-		SELECT * FROM cart WHERE user_id = ?
+		SELECT c.id, c.user_id, c.product_variant_id, c.quantity, 
+		       pv.id AS product_variant_id, pv.product_id, pv.size, pv.color, pv.price
+		FROM cart c
+		LEFT JOIN product_variants pv ON c.product_variant_id = pv.id
+		WHERE c.user_id = ?
 	`
 
 	// Thực hiện truy vấn và ánh xạ kết quả vào struct
-	err = db.Raw(query, userID).Scan(&cart).Error
+	rows, err := db.Raw(query, userID).Rows()
 	if err != nil {
 		fmt.Println("Query execution error:", err)
 		return nil, err
 	}
-	return cart, nil
-}
+	defer rows.Close()
 
+	// Duyệt qua từng dòng dữ liệu và ánh xạ vào Carttypes
+	for rows.Next() {
+		var cartItem types.Carttypes
+		var productVariant types.ProductVariant
+
+		err := rows.Scan(&cartItem.Id, &cartItem.User_Id, &productVariant.ID, &cartItem.Quantity, &productVariant.ID, &productVariant.ProductID, &productVariant.Size, &productVariant.Color, &productVariant.Price)
+		if err != nil {
+			fmt.Println("Row scan error:", err)
+			return nil, err
+		}
+
+		// Thêm thông tin sản phẩm vào Carttypes
+		cartItem.ProductVariants = append(cartItem.ProductVariants, productVariant)
+		carts = append(carts, cartItem)
+	}
+
+	// Trả về kết quả giỏ hàng
+	return carts, nil
+}
 
 func (s *CartService) AddToCart(userID, productVariantID, quantity int) error {
 	if quantity < 1 {
