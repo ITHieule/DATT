@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"web-api/internal/pkg/database"
 	"web-api/internal/pkg/models/request"
+	"web-api/internal/pkg/models/types"
 )
 
 type CartService struct {
@@ -12,6 +13,33 @@ type CartService struct {
 }
 
 var Cart = &CartService{}
+
+func (s *CartService) GetCartByUserID(userID int) ([]types.Carttypes, error) {
+	var cart []types.Carttypes
+
+	// Kết nối database
+	db, err := database.FashionBusiness()
+	if err != nil {
+		fmt.Println("Database connection error:", err)
+		return nil, err
+	}
+	dbInstance, _ := db.DB()
+	defer dbInstance.Close()
+
+	// Truy vấn SQL lấy giỏ hàng theo user_id
+	query := `
+		SELECT * FROM cart WHERE user_id = ?
+	`
+
+	// Thực hiện truy vấn và ánh xạ kết quả vào struct
+	err = db.Raw(query, userID).Scan(&cart).Error
+	if err != nil {
+		fmt.Println("Query execution error:", err)
+		return nil, err
+	}
+	return cart, nil
+}
+
 
 func (s *CartService) AddToCart(userID, productVariantID, quantity int) error {
 	if quantity < 1 {

@@ -7,6 +7,7 @@ import (
 )
 
 func RegisterCartRouter(router *gin.RouterGroup) {
+	router.GET("/get", controllers.Cart.GetToCart)
 	router.POST("/addtocart", controllers.Cart.AddToCart)
 	router.PUT("/update", controllers.Cart.UpdateCartQuantity)
 	router.DELETE("/delete", controllers.Cart.RemoveFromCart)

@@ -20,4 +20,6 @@ func Register(router *gin.Engine) {
 	RegisterCartRouter(v1.Group("/cart"))
 
 	RegisterProductRouter(v1.Group("/product"))
+
+	RegisterOderRouter(v1.Group("/oder"))
 }
