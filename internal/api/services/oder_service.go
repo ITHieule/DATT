@@ -14,7 +14,7 @@ type OderService struct {
 
 var OderServi = &OderService{}
 
-func (s *OderService) GetCartByUserID(userID int) ([]types.Order, error) {
+func (s *OderService) GetOderByUserID(userID int) ([]types.Order, error) {
 	var order []types.Order
 
 	// Kết nối database
@@ -38,4 +38,30 @@ func (s *OderService) GetCartByUserID(userID int) ([]types.Order, error) {
 		return nil, err
 	}
 	return order, nil
+}
+
+func (s *OderService) GetOrderByID(orderID int) (*types.Order, error) {
+	var order types.Order
+
+	// Kết nối database
+	db, err := database.FashionBusiness()
+	if err != nil {
+		fmt.Println("Database connection error:", err)
+		return nil, err
+	}
+	dbInstance, _ := db.DB()
+	defer dbInstance.Close()
+
+	// Lấy đơn hàng kèm theo OrderDetails và ProductVariant
+	err = db.
+		Preload("OrderDetails").                // Lấy danh sách sản phẩm trong đơn hàng
+		Preload("OrderDetails.ProductVariant"). // Lấy thông tin biến thể sản phẩm
+		Where("id = ?", orderID).
+		First(&order).Error
+
+	if err != nil {
+		fmt.Println("Query execution error:", err)
+		return nil, err
+	}
+	return &order, nil
 }
