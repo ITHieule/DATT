@@ -55,3 +55,83 @@ func (c *ProductController) GetProductDetailController(ctx *gin.Context) {
 	// Trả về kết quả
 	response.OkWithData(ctx, product)
 }
+
+// AddProductController thêm sản phẩm cùng với biến thể
+func (c *ProductController) AddProductController(ctx *gin.Context) {
+	var req request.CreateProductRequest
+
+	// Parse dữ liệu từ body
+	if err := ctx.ShouldBindJSON(&req); err != nil {
+		response.FailWithDetailed(ctx, http.StatusBadRequest, nil, "Invalid request body")
+		return
+	}
+
+	// Gọi service để thêm sản phẩm
+	product, err := services.ProductService.AddProductService(&req)
+	if err != nil {
+		response.FailWithDetailed(ctx, http.StatusInternalServerError, nil, err.Error())
+		return
+	}
+
+	// Trả về kết quả
+	response.OkWithData(ctx, product)
+}
+
+
+func (c *ProductController) UpdateProductController(ctx *gin.Context) {
+	var req request.CreateProductRequest
+
+	// Parse dữ liệu từ body
+	if err := ctx.ShouldBindJSON(&req); err != nil {
+		response.FailWithDetailed(ctx, http.StatusBadRequest, nil, "Invalid request body")
+		return
+	}
+
+	// Gọi service để cập nhật sản phẩm
+	product, err := services.ProductService.UpdateProductService(&req)
+	if err != nil {
+		response.FailWithDetailed(ctx, http.StatusInternalServerError, nil, err.Error())
+		return
+	}
+
+	// Trả về kết quả
+	response.OkWithData(ctx, product)
+}
+
+
+func (c *ProductController) Deleteproduct(ctx *gin.Context) {
+	var requestParams request.CreateProductRequest
+
+	if err := c.ValidateReqParams(ctx, &requestParams); err != nil {
+		response.FailWithDetailed(ctx, http.StatusBadRequest, nil, err.Error())
+		return
+	}
+	err := services.ProductService.DeleteproductSevice(requestParams.Id)
+	if err != nil {
+		response.FailWithDetailed(ctx, http.StatusInternalServerError, nil, err.Error())
+		return
+	}
+	response.OkWithData(ctx, nil)
+}
+
+
+
+func (c *ProductController) SearchProduct(ctx *gin.Context) {
+	var requestParams request.CreateProductRequest
+
+	// Lấy tham số từ query string hoặc body
+	if err := ctx.ShouldBindJSON(&requestParams); err != nil {
+		response.FailWithDetailed(ctx, http.StatusBadRequest, nil, "Invalid request body")
+		return
+	}
+
+	// Gọi service để tìm kiếm sản phẩm
+	result, err := services.ProductService.SearchProductService(&requestParams)
+	if err != nil {
+		response.FailWithDetailed(ctx, http.StatusInternalServerError, nil, err.Error())
+		return
+	}
+
+	// Trả về dữ liệu JSON
+	response.OkWithData(ctx, result)
+}
