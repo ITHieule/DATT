@@ -1,11 +1,14 @@
 package services
 
 import (
+	"errors"
 	"fmt"
 
 	"web-api/internal/pkg/database"
 
 	"web-api/internal/pkg/models/types"
+
+	"gorm.io/gorm"
 )
 
 type OderService struct {
@@ -47,21 +50,34 @@ func (s *OderService) GetOrderByID(orderID int) (*types.Order, error) {
 	db, err := database.FashionBusiness()
 	if err != nil {
 		fmt.Println("Database connection error:", err)
-		return nil, err
+		return nil, fmt.Errorf("database connection error: %w", err)
 	}
 	dbInstance, _ := db.DB()
-	defer dbInstance.Close()
+	defer func() {
+		if err := dbInstance.Close(); err != nil {
+			fmt.Println("Error closing database connection:", err)
+		}
+	}()
 
-	// Chỉ preload OrderDetails mà không preload Order trong OrderDetails
+	// Preload OrderDetails và ShippingAddress vào query
 	err = db.
-		Preload("OrderDetails.ProductVariant").
-		Preload("OrderDetails.ProductVariant.Product").
-		Where("id = ?", orderID).
-		First(&order).Error
+    Preload("OrderDetails.ProductVariant").
+    Preload("OrderDetails.ProductVariant.Product").
+    Preload("OrderDetails.ProductVariant.ProductImages"). // Preload bảng ProductImages
+    Preload("ShippingAddress").
+    Where("id = ?", orderID).
+    First(&order).Error
 
+
+
+	// Kiểm tra lỗi khi không tìm thấy bản ghi
 	if err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return nil, fmt.Errorf("order with ID %d not found", orderID) // Thêm thông báo lỗi chi tiết
+		}
 		fmt.Println("Query execution error:", err)
-		return nil, err
+		return nil, fmt.Errorf("query execution error: %w", err)
 	}
+
 	return &order, nil
 }

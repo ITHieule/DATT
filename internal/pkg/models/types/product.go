@@ -31,14 +31,16 @@ type ProductDetailResponse struct {
 
 // ProductVariant đại diện cho một biến thể của sản phẩm
 type ProductVariant struct {
-	ID        int     `json:"id"`
-	ProductID int     `json:"product_id"`
-	Product   Product `json:"product" gorm:"foreignKey:ProductID;references:ID"` // Thêm mối quan hệ với Product
-	Size      string  `json:"size"`
-	Color     string  `json:"color"`
-	Stock     int     `json:"stock"`
-	Price     float64 `json:"price"`
+    ID            int           `json:"id"`
+    ProductID     int           `json:"product_id"`
+    Product       Product       `json:"product" gorm:"foreignKey:ProductID;references:ID"`
+    Size          string        `json:"size"`
+    Color         string        `json:"color"`
+    Stock         int           `json:"stock"`
+    Price         float64       `json:"price"`
+    ProductImages []ProductImage `json:"product_images" gorm:"foreignKey:product_id;references:ID"` // Quan hệ với bảng ProductImage
 }
+
 
 // ProductImage đại diện cho một ảnh sản phẩm
 type ProductImage struct {
