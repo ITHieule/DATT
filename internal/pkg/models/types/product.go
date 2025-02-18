@@ -46,3 +46,8 @@ type ProductImage struct {
 	ProductID int    `json:"product_id"`
 	ImageURL  string `json:"image_url"`
 }
+
+type ProductHot struct {
+	Product  Product `json:"product"` // Không dùng GORM relation ở đây
+	ImageURL string  `json:"image_url"`
+}

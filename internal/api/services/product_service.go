@@ -3,6 +3,7 @@ package services
 import (
 	"fmt"
 	"strings"
+	"time"
 
 	"web-api/internal/pkg/database"
 	"web-api/internal/pkg/models/request"
@@ -360,3 +361,59 @@ func (s *ProductsService) SearchProductService(requestParams *request.CreateProd
 	}
 	return products, nil
 }
+
+func (s *ProductsService) GetLatestProductHots(limit int) ([]types.ProductHot, error) {
+    var results []struct {
+        ProductID   int       `json:"product_id"`
+        CategoryID  int       `json:"category_id"`
+        Name        string    `json:"name"`
+        Description string    `json:"description"`
+        BasePrice   float64   `json:"base_price"`
+        CreatedAt   time.Time `json:"created_at"`
+        ImageURL    string    `json:"image_url"`
+    }
+
+    db, err := database.FashionBusiness()
+    if err != nil {
+        fmt.Println("Database connection error:", err)
+        return nil, err
+    }
+    dbInstance, _ := db.DB()
+    defer dbInstance.Close()
+
+    // Truy vấn lấy sản phẩm mới nhất với hình ảnh
+    query := `
+        SELECT p.id AS product_id, p.category_id, p.name, p.description, p.base_price, p.created_at, 
+               COALESCE(pi.image_url, '') AS image_url
+        FROM products p
+        LEFT JOIN product_images pi ON pi.product_id = p.id
+        ORDER BY p.created_at DESC
+        LIMIT ?
+    `
+
+    // Thực hiện truy vấn
+    err = db.Raw(query, limit).Scan(&results).Error
+    if err != nil {
+        fmt.Println("Query execution error:", err)
+        return nil, err
+    }
+
+    // Chuyển đổi kết quả thành dạng `ProductHot`
+    var productHots []types.ProductHot
+    for _, item := range results {
+        productHots = append(productHots, types.ProductHot{
+            ImageURL:  item.ImageURL,
+            Product: types.Product{
+                ID:          item.ProductID,
+                CategoryID:  item.CategoryID,
+                Name:        item.Name,
+                Description: item.Description,
+                BasePrice:   item.BasePrice,
+                CreatedAt:   item.CreatedAt,
+            },
+        })
+    }
+
+    return productHots, nil
+}
+

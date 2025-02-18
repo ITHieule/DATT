@@ -15,5 +15,5 @@ func RegisterProductRouter(router *gin.RouterGroup) {
 
 	router.GET("/getimage", controllers.Product.Getproduct_image)
 	router.GET("/getvariants/:id", controllers.Product.GetProductDetailController)
-
+	router.GET("/getlatest", controllers.Product.GetLatestProductHots)
 }
