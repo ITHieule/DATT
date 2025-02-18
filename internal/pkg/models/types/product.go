@@ -32,7 +32,8 @@ type ProductDetailResponse struct {
 // ProductVariant đại diện cho một biến thể của sản phẩm
 type ProductVariant struct {
 	ID        int     `json:"id"`
-	ProductID int     `json:"product_id"` // This should match the foreign key in the Product table
+	ProductID int     `json:"product_id"`
+	Product   Product `json:"product" gorm:"foreignKey:ProductID;references:ID"` // Thêm mối quan hệ với Product
 	Size      string  `json:"size"`
 	Color     string  `json:"color"`
 	Stock     int     `json:"stock"`

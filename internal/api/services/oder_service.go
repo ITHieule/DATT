@@ -52,10 +52,10 @@ func (s *OderService) GetOrderByID(orderID int) (*types.Order, error) {
 	dbInstance, _ := db.DB()
 	defer dbInstance.Close()
 
-	// Lấy đơn hàng kèm theo OrderDetails và ProductVariant
+	// Chỉ preload OrderDetails mà không preload Order trong OrderDetails
 	err = db.
-		Preload("OrderDetails").                // Lấy danh sách sản phẩm trong đơn hàng
-		Preload("OrderDetails.ProductVariant"). // Lấy thông tin biến thể sản phẩm
+		Preload("OrderDetails.ProductVariant").
+		Preload("OrderDetails.ProductVariant.Product").
 		Where("id = ?", orderID).
 		First(&order).Error
 

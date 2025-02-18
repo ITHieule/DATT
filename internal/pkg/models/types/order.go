@@ -15,10 +15,11 @@ type Order struct {
 
 type OrderDetail struct {
 	ID               int            `json:"id"`
-	OrderID          int            `json:"order_id"`
+	OrderID          int            `json:"order_id" gorm:"foreignKey:OrderID;references:ID"`
 	ProductVariantID int            `json:"product_variant_id"`
+	ProductVariant   ProductVariant `json:"product_variant" gorm:"foreignKey:ProductVariantID;references:ID"`
 	Quantity         int            `json:"quantity"`
 	UnitPrice        float64        `json:"unit_price"`
 	TotalPrice       float64        `json:"total_price"`
-	ProductVariant   ProductVariant `json:"product_variant" gorm:"foreignKey:ProductVariantID;references:ID"`
 }
+
