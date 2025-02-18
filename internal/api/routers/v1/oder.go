@@ -7,7 +7,7 @@ import (
 )
 
 func RegisterOderRouter(router *gin.RouterGroup) {
-	router.GET("/get", controllers.Oder.Getoder)
-	router.GET("/getorderid", controllers.Oder.GetProductDetailsByOrderID)
-	
+	router.POST("/get", controllers.Oder.GetOder)
+	router.GET("/getorderid/:order_id", controllers.Oder.GetProductDetailsByOrderID)
+
 }
