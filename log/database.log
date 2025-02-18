@@ -107,3 +107,6 @@
 			avatar_url = ''
         WHERE id = 15
     
+
+2025/02/18 07:52:54 D:/DATT/internal/api/services/caterogy_service.go:31
+[12.235ms] [rows:4] SELECT * FROM categories
