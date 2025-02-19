@@ -58,3 +58,16 @@ func (c *UserController) Login(ctx *gin.Context) {
 
 	response.OkWithData(ctx, token)
 }
+
+
+func (c *UserController) GetUser(ctx *gin.Context) {
+
+	result, err := services.User.GetUserService()
+	if err != nil {
+		response.FailWithDetailed(ctx, http.StatusInternalServerError, nil, err.Error())
+		return
+	}
+	response.OkWithData(ctx, result)
+
+
+}
