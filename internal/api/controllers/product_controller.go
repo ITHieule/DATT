@@ -135,23 +135,21 @@ func (c *ProductController) SearchProduct(ctx *gin.Context) {
 }
 
 func (c *ProductController) GetLatestProductHots(ctx *gin.Context) {
-    // Lấy số lượng sản phẩm từ query params (mặc định lấy 12 sản phẩm)
-    limitStr := ctx.DefaultQuery("limit", "12")
-    limit, err := strconv.Atoi(limitStr)
-    if err != nil || limit <= 0 {
-        response.FailWithDetailed(ctx, http.StatusBadRequest, nil, "Invalid limit value")
-        return
-    }
+	// Lấy số lượng sản phẩm từ query params (mặc định lấy 12 sản phẩm)
+	limitStr := ctx.DefaultQuery("limit", "10")
+	limit, err := strconv.Atoi(limitStr)
+	if err != nil || limit <= 0 {
+		response.FailWithDetailed(ctx, http.StatusBadRequest, nil, "Invalid limit value")
+		return
+	}
 
-    // Gọi service để lấy danh sách sản phẩm hot mới nhất
-    products, err := services.ProductService.GetLatestProductHots(limit)
-    if err != nil {
-        response.FailWithDetailed(ctx, http.StatusInternalServerError, nil, err.Error())
-        return
-    }
+	// Gọi service để lấy danh sách sản phẩm hot mới nhất
+	products, err := services.ProductService.GetLatestProductHots(limit)
+	if err != nil {
+		response.FailWithDetailed(ctx, http.StatusInternalServerError, nil, err.Error())
+		return
+	}
 
-    // Trả về kết quả
-    response.OkWithData(ctx, products)
+	// Trả về kết quả
+	response.OkWithData(ctx, products)
 }
-
-
