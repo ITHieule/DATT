@@ -2,7 +2,6 @@ package services
 
 import (
 	"errors"
-	"fmt"
 	"web-api/internal/api/until"
 	"web-api/internal/pkg/database"
 	"web-api/internal/pkg/models/request"
@@ -61,33 +60,50 @@ func (s *UserService) UpdateUserSevice(requestParams *request.CreateUserRequest)
 	return Sizes, nil
 }
 
-func (s *UserService) Register(requestParams *request.CreateUserRequest) ([]types.User, error) {
-	var User []types.User
-
+func (s *UserService) Register(requestParams *request.CreateUserRequest) (*types.User, error) {
 	db, err := database.FashionBusiness()
 	if err != nil {
-		return nil, err
+		return nil, errors.New("Lỗi kết nối cơ sở dữ liệu")
 	}
 
-	hashedPassword, err := HashPassword(requestParams.Password) // ✅ FE gửi "password", BE hash rồi lưu
+	// Kiểm tra email đã tồn tại chưa
+	var existingEmail types.User
+	err = db.Raw("SELECT id FROM users WHERE email = ? LIMIT 1", requestParams.Email).Scan(&existingEmail).Error
 	if err != nil {
 		return nil, err
 	}
-
-	query := "INSERT INTO users (name, email, password_hash, phone) VALUES (?, ?, ?, ?)"
-	err = db.Raw(query,
-		requestParams.Name,
-		requestParams.Email,
-		hashedPassword,
-		requestParams.Phone,
-	).Scan(&User).Error
-
-	if err != nil {
-		fmt.Println("❌ Query execution error:", err)
+	if existingEmail.ID != 0 {
+		return nil, errors.New("email đã tồn tại")
 	}
 
-	return User, nil
+	// Kiểm tra số điện thoại đã tồn tại chưa
+	var existingPhone types.User
+	err = db.Raw("SELECT id FROM users WHERE phone = ? LIMIT 1", requestParams.Phone).Scan(&existingPhone).Error
+	if err != nil {
+		return nil, err
+	}
+	if existingPhone.ID != 0 {
+		return nil, errors.New("số điện thoại đã tồn tại")
+	}
+
+	// Mã hóa mật khẩu
+	hashedPassword, err := HashPassword(requestParams.Password)
+	if err != nil {
+		return nil, errors.New("Lỗi khi mã hóa mật khẩu")
+	}
+
+	// Tạo user mới
+	var newUser types.User
+	err = db.Raw("INSERT INTO users (name, email, password_hash, phone) VALUES (?, ?, ?, ?) RETURNING *",
+		requestParams.Name, requestParams.Email, hashedPassword, requestParams.Phone).Scan(&newUser).Error
+
+	if err != nil {
+		return nil, errors.New("Lỗi khi tạo tài khoản")
+	}
+
+	return &newUser, nil
 }
+
 func (s *UserService) Login(requestParams *request.LoginRequests) (string, error) {
 	var user types.User
 

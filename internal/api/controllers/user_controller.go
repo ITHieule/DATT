@@ -17,14 +17,21 @@ var User = &UserController{}
 
 func (c *UserController) Register(ctx *gin.Context) {
 	var requestParams request.CreateUserRequest
+
+	// Kiểm tra dữ liệu đầu vào
 	if err := c.ValidateReqParams(ctx, &requestParams); err != nil {
 		response.FailWithDetailed(ctx, http.StatusBadRequest, nil, err.Error())
 		return
 	}
+
+	// Gọi service để xử lý đăng ký
 	result, err := services.User.Register(&requestParams)
 	if err != nil {
 		response.FailWithDetailed(ctx, http.StatusInternalServerError, nil, err.Error())
+		return // 🔥 Quan trọng: return để ngăn chặn response thứ hai
 	}
+
+	// Trả về response thành công
 	response.OkWithData(ctx, result)
 }
 
