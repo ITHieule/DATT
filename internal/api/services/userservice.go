@@ -2,6 +2,7 @@ package services
 
 import (
 	"errors"
+	"fmt"
 	"web-api/internal/api/until"
 	"web-api/internal/pkg/database"
 	"web-api/internal/pkg/models/request"
@@ -36,7 +37,6 @@ func (s *UserService) GetUserService() ([]types.User, error) {
 
 	return records, nil
 }
-
 
 func (s *UserService) UpdateUserSevice(requestParams *request.CreateUserRequest) ([]types.User, error) {
 	var Sizes []types.User
