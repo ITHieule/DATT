@@ -25,4 +25,6 @@ func Register(router *gin.Engine) {
 
 	RegisterCaterogyRouter(v1.Group("/caterogy"))
 
+	RegisterAddressRouter(v1.Group("/address"))
+
 }

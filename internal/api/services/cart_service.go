@@ -7,7 +7,6 @@ import (
 	"web-api/internal/pkg/database"
 	"web-api/internal/pkg/models/request"
 	"web-api/internal/pkg/models/types"
-
 )
 
 type CartService struct {
@@ -78,9 +77,9 @@ func (s *CartService) GetCartByUserID(userID int) ([]types.Carttypes, error) {
 		// Nếu cartID chưa có trong map, khởi tạo mới
 		if _, exists := cartMap[cartID]; !exists {
 			cartMap[cartID] = &types.Carttypes{
-				Id:                   cartID,
-				User_Id:              userID,
-				Quantity:             quantity,
+				ID:                    cartID,
+				UserID:                userID,
+				Quantity:              quantity,
 				ProductDetailResponse: []types.ProductDetailResponse{},
 			}
 		}
@@ -97,7 +96,6 @@ func (s *CartService) GetCartByUserID(userID int) ([]types.Carttypes, error) {
 
 	return carts, nil
 }
-
 
 func (s *CartService) AddToCart(userID, productVariantID, quantity int) error {
 	if quantity < 1 {

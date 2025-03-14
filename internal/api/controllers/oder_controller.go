@@ -6,6 +6,7 @@ import (
 	"web-api/internal/api/services"
 
 	"web-api/internal/pkg/models/response"
+	"web-api/internal/pkg/models/types"
 
 	"github.com/gin-gonic/gin"
 )
@@ -17,51 +18,87 @@ type OderController struct {
 var Oder = &OderController{}
 
 func (c *OderController) GetOder(ctx *gin.Context) {
-	// Struct để nhận dữ liệu từ body
 	var request struct {
 		UserID int `json:"user_id"`
 	}
 
-	// Bind JSON từ body vào struct
 	if err := ctx.ShouldBindJSON(&request); err != nil {
 		response.FailWithDetailed(ctx, http.StatusBadRequest, nil, "Invalid request body")
 		return
 	}
 
-	// Kiểm tra userID có hợp lệ không
 	if request.UserID == 0 {
 		response.FailWithDetailed(ctx, http.StatusBadRequest, nil, "User ID is required")
 		return
 	}
 
-	// Gọi service để lấy giỏ hàng theo userID
-	result, err := services.OderServi.GetOderByUserID(request.UserID)
+	result, err := services.Order.GetOderByUserID(request.UserID)
 	if err != nil {
 		response.FailWithDetailed(ctx, http.StatusInternalServerError, nil, err.Error())
 		return
 	}
 
-	// Trả về kết quả thành công
 	response.OkWithData(ctx, result)
 }
 func (c *OderController) GetProductDetailsByOrderID(ctx *gin.Context) {
-	// Lấy order_id từ URL parameters
 	orderID := ctx.Param("order_id")
 
-	// Convert orderID nếu cần (ví dụ: từ string sang int)
 	parsedOrderID, err := strconv.Atoi(orderID)
 	if err != nil {
 		response.FailWithDetailed(ctx, http.StatusBadRequest, nil, "Invalid Order ID")
 		return
 	}
 
-	// Gọi service để lấy sản phẩm theo order_id
-	result, err := services.OderServi.GetOrderByID(parsedOrderID)
+	result, err := services.Order.GetOrderByID(parsedOrderID)
 	if err != nil {
 		response.FailWithDetailed(ctx, http.StatusInternalServerError, nil, "Failed to get product details: "+err.Error())
 		return
 	}
-
-	// Trả về kết quả thành công
 	response.OkWithData(ctx, result)
+}
+
+// 📌 **API: Đặt hàng từ giỏ hàng của user**
+func (c *OderController) CreateOrderFromCart(ctx *gin.Context) {
+	// 🏷️ **Lấy user_id từ body request** 
+	var request struct {
+		UserID         int    `json:"user_id"`
+		RecipientName  string `json:"recipient_name"`
+		RecipientPhone string `json:"recipient_phone"`
+	}
+
+	// 📌 **Kiểm tra dữ liệu đầu vào**
+	if err := ctx.ShouldBindJSON(&request); err != nil {
+		response.FailWithDetailed(ctx, http.StatusBadRequest, nil, "Invalid request body")
+		return
+	}
+
+	if request.UserID == 0 {
+		response.FailWithDetailed(ctx, http.StatusBadRequest, nil, "User ID is required")
+		return
+	}
+
+	if request.RecipientName == "" || request.RecipientPhone == "" {
+		response.FailWithDetailed(ctx, http.StatusBadRequest, nil, "Recipient name and phone are required")
+		return
+	}
+
+	// 🛍️ **Tạo đơn hàng mới**
+	var newOrder types.Order
+	newOrder.RecipientName = request.RecipientName
+	newOrder.RecipientPhone = request.RecipientPhone
+
+	err := services.Order.CreateOrderFromCart(request.UserID, &newOrder)
+	if err != nil {
+		response.FailWithDetailed(ctx, http.StatusInternalServerError, nil, err.Error())
+		return
+	}
+
+	// ✅ **Trả về kết quả thành công**
+	response.OkWithData(ctx, gin.H{
+		"order_id":        newOrder.ID,
+		"recipient_name":  newOrder.RecipientName,
+		"recipient_phone": newOrder.RecipientPhone,
+		"total_price":     newOrder.TotalPrice,
+		"status":          newOrder.Status,
+	})
 }

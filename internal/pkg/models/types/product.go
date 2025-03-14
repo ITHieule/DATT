@@ -5,19 +5,20 @@ import (
 )
 
 type Product struct {
-	ID          int       `json:"id"`
-	CategoryID  int       `json:"category_id"`
-	Name        string    `json:"name"`
-	Description string    `json:"description"`
-	BasePrice   float64   `json:"base_price"`
-	CreatedAt   time.Time `json:"created_at"`
+	ID            int            `json:"id"`
+	CategoryID    int            `json:"category_id"`
+	Name          string         `json:"name"`
+	Description   string         `json:"description"`
+	BasePrice     float64        `json:"base_price"`
+	CreatedAt     time.Time      `json:"created_at"`
+	ProductImages []ProductImage `json:"product_images" gorm:"foreignKey:ProductID;references:ID"`
 }
 type Product_image struct {
 	ID           int      `json:"id"`
 	Name         string   `json:"name"`
 	BasePrice    float64  `json:"base_price"`
 	ImageURLs    []string `json:"image_urls" gorm:"-"`
-	ImageURLsRaw string   `json:"-" gorm:"column:image_urls"` // Trường tạm để nhận dữ liệu từ SQL
+	ImageURLsRaw string   `json:"-" gorm:"column:image_urls"`
 }
 
 type ProductDetailResponse struct {
@@ -25,24 +26,21 @@ type ProductDetailResponse struct {
 	Name        string           `json:"name"`
 	BasePrice   float64          `json:"base_price"`
 	Description string           `json:"description"`
-	Variants    []ProductVariant `json:"variants" gorm:"foreignKey:ProductID;references:ID"` // Specify foreign key relation
+	Variants    []ProductVariant `json:"variants" gorm:"foreignKey:ProductID;references:ID"`
 	Images      []string         `json:"images"`
 }
 
-// ProductVariant đại diện cho một biến thể của sản phẩm
 type ProductVariant struct {
-    ID            int           `json:"id"`
-    ProductID     int           `json:"product_id"`
-    Product       Product       `json:"product" gorm:"foreignKey:ProductID;references:ID"`
-    Size          string        `json:"size"`
-    Color         string        `json:"color"`
-    Stock         int           `json:"stock"`
-    Price         float64       `json:"price"`
-    ProductImages []ProductImage `json:"product_images" gorm:"foreignKey:product_id;references:ID"` // Quan hệ với bảng ProductImage
+	ID            int            `json:"id"`
+	ProductID     int            `json:"product_id"`
+	Product       Product        `json:"product" gorm:"foreignKey:ProductID;references:ID"`
+	Size          string         `json:"size"`
+	Color         string         `json:"color"`
+	Stock         int            `json:"stock"`
+	Price         float64        `json:"price"`
+	ProductImages []ProductImage `json:"product_images" gorm:"foreignKey:ProductID;references:ProductID"`
 }
 
-
-// ProductImage đại diện cho một ảnh sản phẩm
 type ProductImage struct {
 	ID        int    `json:"id"`
 	ProductID int    `json:"product_id"`
@@ -50,6 +48,6 @@ type ProductImage struct {
 }
 
 type ProductHot struct {
-	Product  Product `json:"product"` // Không dùng GORM relation ở đây
+	Product  Product `json:"product"`
 	ImageURL string  `json:"image_url"`
 }

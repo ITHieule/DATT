@@ -3,18 +3,17 @@ package types
 import "time"
 
 type Order struct {
-	ID               int           `json:"id"`
-	UserID           int           `json:"user_id"`
-	RecipientName    string        `json:"recipient_name"`
-	RecipientPhone   string        `json:"recipient_phone"`
-	TotalPrice       float64       `json:"total_price"`
-	Status           string        `json:"status"`
-	CreatedAt        time.Time     `json:"created_at"`
-	OrderDetails     []OrderDetail `json:"order_details" gorm:"foreignKey:OrderID;references:ID"`
-	ShippingAddressID int          `json:"shipping_address_id"` // ID của địa chỉ
-	ShippingAddress  ShippingAddress `json:"shipping_address" gorm:"foreignKey:ShippingAddressID;references:ID"` // Thêm preload ShippingAddress
+	ID                int             `json:"id"`
+	UserID            int             `json:"user_id"`
+	RecipientName     string          `json:"recipient_name"`
+	RecipientPhone    string          `json:"recipient_phone"`
+	TotalPrice        float64         `json:"total_price"`
+	Status            string          `json:"status"`
+	CreatedAt         time.Time       `json:"created_at"`
+	OrderDetails      []OrderDetail   `json:"order_details" gorm:"foreignKey:OrderID;references:ID"`
+	ShippingAddressID int             `json:"shipping_address_id"`
+	ShippingAddress   ShippingAddress `json:"shipping_address" gorm:"foreignKey:ShippingAddressID;references:ID"`
 }
-
 
 type OrderDetail struct {
 	ID               int            `json:"id"`
@@ -25,6 +24,3 @@ type OrderDetail struct {
 	UnitPrice        float64        `json:"unit_price"`
 	TotalPrice       float64        `json:"total_price"`
 }
-
-
-
