@@ -63,11 +63,20 @@ func (s *AddressService) UpdateAddressByUserID(requestParams *types.ShippingAddr
 
 	query := `
         UPDATE shipping_addresses 
-        SET full_address = ?, city = ?, postal_code = ?, country = ?, is_default = ? 
+        SET province = ?, district = ?, ward = ?, postal_code = ?, latitude = ?, longitude = ?, is_default = ? 
         WHERE user_id = ? AND id = ?
     `
-
-	err = db.Exec(query, requestParams.FullAddress, requestParams.City, requestParams.PostalCode, requestParams.Country, requestParams.IsDefault, requestParams.UserID, requestParams.ID).Error
+	err = db.Exec(query,
+		requestParams.Province,
+		requestParams.District,
+		requestParams.Ward,
+		requestParams.PostalCode,
+		requestParams.Latitude,
+		requestParams.Longitude,
+		requestParams.IsDefault,
+		requestParams.UserID,
+		requestParams.ID,
+	).Error
 	if err != nil {
 		fmt.Println("Update execution error:", err)
 		return err

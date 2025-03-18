@@ -200,7 +200,6 @@ func (s *OderService) CreateOrderFromCart(userID int, order *types.Order) error 
 	dbInstance, _ := db.DB()
 	defer dbInstance.Close()
 
-	// ✅ Kiểm tra ShippingAddressID hợp lệ (nếu không có, thử lấy địa chỉ mặc định)
 	var shippingAddress types.ShippingAddress
 	if err := db.Model(&types.ShippingAddress{}).
 		Where("id = ? AND user_id = ?", order.ShippingAddressID, userID).
@@ -209,7 +208,7 @@ func (s *OderService) CreateOrderFromCart(userID int, order *types.Order) error 
 			if err := db.Model(&types.ShippingAddress{}).
 				Where("user_id = ? AND is_default = ?", userID, true).
 				First(&shippingAddress).Error; err != nil {
-				return errors.New("shipping address is required")
+				return errors.New("Vui Lòng Chọn Địa Chỉ Mặc Định")
 			}
 			order.ShippingAddressID = shippingAddress.ID
 		} else {
@@ -227,21 +226,26 @@ func (s *OderService) CreateOrderFromCart(userID int, order *types.Order) error 
 		// Tính tổng tiền từ các giỏ hàng và cập nhật orderDetailsMap
 		for _, cart := range carts {
 			for _, product := range cart.ProductDetailResponse {
-				for _, variant := range product.Variants {
-					if _, exists := orderDetailsMap[variant.ID]; exists {
-						// Nếu đã tồn tại, cộng dồn số lượng và tổng tiền
-						orderDetailsMap[variant.ID].TotalPrice += variant.Price * float64(cart.Quantity)
-					} else {
-						// Nếu chưa có, thêm mới vào map
-						orderDetailsMap[variant.ID] = &types.OrderDetail{
-							ProductVariantID: variant.ID,
-							Quantity:         cart.Quantity,
-							UnitPrice:        variant.Price,
-							TotalPrice:       variant.Price * float64(cart.Quantity),
-						}
-					}
-					totalPrice += variant.Price * float64(cart.Quantity)
+				// Nếu mảng variant rỗng thì bỏ qua sản phẩm này
+				if len(product.Variants) == 0 {
+					continue
 				}
+				// Giả sử variant được chọn là variant đầu tiên
+				variant := product.Variants[0]
+
+				// Cập nhật orderDetailsMap: nếu đã tồn tại thì cộng dồn, nếu chưa tồn tại thì khởi tạo
+				if detail, exists := orderDetailsMap[variant.ID]; exists {
+					detail.Quantity += cart.Quantity
+					detail.TotalPrice += variant.Price * float64(cart.Quantity)
+				} else {
+					orderDetailsMap[variant.ID] = &types.OrderDetail{
+						ProductVariantID: variant.ID,
+						Quantity:         cart.Quantity,
+						UnitPrice:        variant.Price,
+						TotalPrice:       variant.Price * float64(cart.Quantity),
+					}
+				}
+				totalPrice += variant.Price * float64(cart.Quantity)
 			}
 		}
 
@@ -252,7 +256,7 @@ func (s *OderService) CreateOrderFromCart(userID int, order *types.Order) error 
 			order.Status = "Chờ xác nhận"
 		}
 
-		// ✅ Thêm thông tin người nhận hàng
+		// Kiểm tra thông tin người nhận hàng
 		if order.RecipientName == "" || order.RecipientPhone == "" {
 			return errors.New("recipient name and phone are required")
 		}
@@ -262,7 +266,7 @@ func (s *OderService) CreateOrderFromCart(userID int, order *types.Order) error 
 			return err
 		}
 
-		// ✅ Lưu orderDetails từ map vào database
+		// Lưu orderDetails từ map vào database
 		for _, orderDetail := range orderDetailsMap {
 			orderDetail.OrderID = order.ID // Gán OrderID vào từng OrderDetail
 			if err := tx.Model(&types.OrderDetail{}).Create(orderDetail).Error; err != nil {
